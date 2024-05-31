@@ -1,33 +1,31 @@
 // Global selects;
 const jokeContainer = document.getElementById('joke');
 const jokeGenerator = document.getElementById('joke-btn');
-// XHR Object init
-const xhr = new XMLHttpRequest();
 
-// Handle dat;
-xhr.onreadystatechange = function () {
-  if (this.readyState === 4 && this.status === 200) {
-    const data = JSON.parse(this.responseText);
+// Generate joke function
+const generateJoke = () => {
+  // XHR Object init
+  const xhr = new XMLHttpRequest();
+  // Open request
+  xhr.open('GET', 'https://api.chucknorris.io/jokes/random');
 
-    // Generating;
-    jokeContainer.innerHTML = '';
-    for (const key in data) {
-      if (data.hasOwnProperty(key)) {
-        if (key === 'value') {
-          const text = document.createElement('p');
-          text.innerHTML = `
-            ${data[key]};
-        `;
-          jokeContainer.appendChild(text);
-        }
+  // Handle data;
+  xhr.onreadystatechange = function () {
+    if (this.readyState === 4) {
+      if (this.status === 200) {
+        jokeContainer.innerHTML = JSON.parse(this.responseText).value;
+      } else {
+        jokeContainer.innerHTML =
+          'Chuck Norris decided against this. You died!';
       }
     }
-  }
-};
-// Event
-jokeGenerator.addEventListener('click', () => {
-  // Open state?
-  xhr.open('GET', 'https://api.chucknorris.io/jokes/random');
+  };
+
   // Send request
   xhr.send();
-});
+};
+
+// Event
+jokeGenerator.addEventListener('click', generateJoke);
+// Event on load - to populate with joke;
+document.addEventListener('DOMContentLoaded', generateJoke);
